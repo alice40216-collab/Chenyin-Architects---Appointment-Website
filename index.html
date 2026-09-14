@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="宸胤建築師事務所現場勘查線上預約。填寫申請資料、選擇日期與時段，由本所與您聯繫確認。"
+    />
+    <meta name="theme-color" content="#090909" />
+    <title>預約現場勘查｜宸胤建築師事務所</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23090909'/%3E%3Cpath d='M18 16h28v6H24v20h22v6H18z' fill='%23c9ad78'/%3E%3Cpath d='M34 27l11 5.5L34 38z' fill='%23f4f1e8'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <div class="page-grid" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="brand" href="#main" aria-label="宸胤建築師事務所首頁">
+        <span class="brand-image-wrap">
+          <img
+            src="./assets/chen-yin-logo.jpg"
+            alt="宸胤建築師事務所 CHEN YIN Architect Association"
+            width="573"
+            height="165"
+          />
+        </span>
+      </a>
+      <div class="header-note">
+        <span aria-hidden="true"></span>
+        ONLINE RESERVATION
+      </div>
+    </header>
+
+    <main id="main" class="main-layout">
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">SITE VISIT · 線上預約</p>
+        <h1 id="page-title">預約現場<br /><em>勘查時間</em></h1>
+        <p class="intro-copy">
+          填寫申請資料並選擇方便的日期與時段。本所收到預約申請後，將透過 LINE 與您確認。
+        </p>
+
+        <ol class="process" aria-label="預約流程">
+          <li><b>01</b><span>填寫申請資訊</span></li>
+          <li><b>02</b><span>選擇日期與時段</span></li>
+          <li><b>03</b><span>本所聯繫確認</span></li>
+        </ol>
+
+        <div class="availability-note">
+          <span class="note-mark" aria-hidden="true"></span>
+          <p><b>預約提醒</b><br />實際勘查時間以本所確認通知為準。</p>
+        </div>
+      </section>
+
+      <section class="booking-card" aria-labelledby="form-title">
+        <div class="card-heading">
+          <div>
+            <p class="section-index">RESERVATION / 01</p>
+            <h2 id="form-title">預約現場勘查</h2>
+          </div>
+          <p class="required-note"><span>*</span> 必填欄位</p>
+        </div>
+
+        <form id="booking-form" novalidate>
+          <fieldset class="form-section">
+            <legend>申請資料</legend>
+            <div class="field-grid">
+              <div class="field">
+                <label for="applicant">申請人名稱 <span>*</span></label>
+                <input
+                  id="applicant"
+                  name="applicant"
+                  type="text"
+                  autocomplete="name"
+                  placeholder="請輸入姓名或公司名稱"
+                  required
+                />
+                <p class="field-error" id="applicant-error"></p>
+              </div>
+
+              <div class="field">
+                <label for="line-id">申請人 LINE ID <span>*</span></label>
+                <input
+                  id="line-id"
+                  name="lineId"
+                  type="text"
+                  autocomplete="off"
+                  placeholder="例如 chenyin123"
+                  required
+                />
+                <p class="field-error" id="line-id-error"></p>
+              </div>
+
+              <div class="field field-wide">
+                <label for="address">申請地址 <span>*</span></label>
+                <input
+                  id="address"
+                  name="address"
+                  type="text"
+                  autocomplete="street-address"
+                  placeholder="請輸入完整地址，包含樓層或室號"
+                  required
+                />
+                <p class="field-error" id="address-error"></p>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="form-section schedule-section">
+            <legend>預約時間</legend>
+            <div class="schedule-grid">
+              <div class="calendar-panel">
+                <label class="calendar-label" id="date-label">預約日期 <span>*</span></label>
+                <div class="calendar" aria-labelledby="date-label">
+                  <div class="calendar-toolbar">
+                    <p id="calendar-month" aria-live="polite"></p>
+                    <div class="month-actions">
+                      <button id="previous-month" type="button" aria-label="上一個月">
+                        <span aria-hidden="true">←</span>
+                      </button>
+                      <button id="next-month" type="button" aria-label="下一個月">
+                        <span aria-hidden="true">→</span>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="weekdays" aria-hidden="true">
+                    <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+                  </div>
+                  <div id="calendar-days" class="calendar-days" role="grid" aria-label="選擇預約日期"></div>
+                </div>
+                <input id="booking-date" name="date" type="hidden" required />
+                <p id="selected-date" class="selected-date" aria-live="polite">尚未選擇日期</p>
+                <p class="field-error" id="booking-date-error"></p>
+              </div>
+
+              <div class="time-panel">
+                <p class="time-label" id="time-label">預約時段 <span>*</span></p>
+                <div class="time-options" role="radiogroup" aria-labelledby="time-label">
+                  <label class="time-option">
+                    <input type="radio" name="time" value="上午 09:00–11:00" />
+                    <span class="time-copy"><b>上午</b><small>09:00 — 11:00</small></span>
+                    <span class="radio-mark" aria-hidden="true"></span>
+                  </label>
+                  <label class="time-option">
+                    <input type="radio" name="time" value="下午 16:00–18:00" />
+                    <span class="time-copy"><b>下午</b><small>16:00 — 18:00</small></span>
+                    <span class="radio-mark" aria-hidden="true"></span>
+                  </label>
+                  <label class="time-option">
+                    <input type="radio" name="time" value="專案另行聯絡預約時間" />
+                    <span class="time-copy"><b>專案另約</b><small>由專人聯絡確認</small></span>
+                    <span class="radio-mark" aria-hidden="true"></span>
+                  </label>
+                </div>
+                <p id="project-note" class="project-note" hidden>
+                  選擇專案另約後，我們將透過 LINE 與您安排合適時間。
+                </p>
+                <p class="field-error" id="time-error"></p>
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="form-footer">
+            <p>送出後將開啟您的郵件程式，請確認寄出預約信件。</p>
+            <button class="submit-button" type="submit">
+              <span>送出預約申請</span>
+              <span aria-hidden="true">↗</span>
+            </button>
+          </div>
+          <p id="form-status" class="sr-status" aria-live="assertive"></p>
+        </form>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-brand">
+        <p>宸胤建築師事務所</p>
+        <span>CHEN YIN ARCHITECT ASSOCIATION</span>
+      </div>
+      <address class="footer-details">
+        <p><span>公司聯絡地址</span>新北市板橋區四川路一段97號5樓之1</p>
+        <p><span>電話</span><a href="tel:+886289512719">(02) 8951-2719</a></p>
+        <p><span>EMAIL</span><a href="mailto:services@chenyin-arch.com.tw">services@chenyin-arch.com.tw</a></p>
+        <p><span>統編</span>41495759</p>
+      </address>
+    </footer>
+
+    <div id="review-dialog" class="dialog-backdrop" hidden>
+      <section class="review-dialog" role="dialog" aria-modal="true" aria-labelledby="review-title">
+        <button id="close-dialog" class="dialog-close" type="button" aria-label="關閉確認視窗">×</button>
+        <p class="section-index">FINAL CHECK</p>
+        <h2 id="review-title">確認預約資料</h2>
+        <p class="dialog-intro">請確認以下資訊。點選寄出後，才會正式送達本所信箱。</p>
+        <dl id="booking-summary" class="booking-summary"></dl>
+        <div class="dialog-actions">
+          <a id="email-booking" class="submit-button" href="#">
+            <span>開啟郵件寄出</span><span aria-hidden="true">↗</span>
+          </a>
+          <button id="copy-booking" class="secondary-button" type="button">複製預約內容</button>
+        </div>
+        <p id="copy-status" class="copy-status" aria-live="polite"></p>
+      </section>
+    </div>
+  </body>
+</html>
