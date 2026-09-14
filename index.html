@@ -156,28 +156,33 @@
               </div>
 
               <div class="time-panel">
-                <p class="time-label" id="time-label">預約時段 <span>*</span></p>
-                <div class="time-options" role="radiogroup" aria-labelledby="time-label">
-                  <label class="time-option">
-                    <input type="radio" name="appointment_time" value="上午 09:00–11:00" />
-                    <span class="time-copy"><b>上午</b><small>09:00 — 11:00</small></span>
-                    <span class="radio-mark" aria-hidden="true"></span>
-                  </label>
-                  <label class="time-option">
-                    <input type="radio" name="appointment_time" value="下午 16:00–18:00" />
-                    <span class="time-copy"><b>下午</b><small>16:00 — 18:00</small></span>
-                    <span class="radio-mark" aria-hidden="true"></span>
-                  </label>
-                  <label class="time-option">
-                    <input type="radio" name="appointment_time" value="專案另行聯絡預約時間" />
-                    <span class="time-copy"><b>專案另約</b><small>由專人於諮詢後確認</small></span>
-                    <span class="radio-mark" aria-hidden="true"></span>
-                  </label>
+                <label class="time-label" id="time-label" for="appointment-time">預約時段 <span>*</span></label>
+                <div class="time-select-wrap">
+                  <select
+                    id="appointment-time"
+                    class="time-select"
+                    name="appointment_time"
+                    aria-describedby="time-error project-note"
+                    required
+                  >
+                    <option value="" selected disabled>請選擇預約時段</option>
+                    <optgroup label="上午">
+                      <option value="上午 09:00–10:00">09:00 — 10:00</option>
+                      <option value="上午 10:00–11:00">10:00 — 11:00</option>
+                    </optgroup>
+                    <optgroup label="下午">
+                      <option value="下午 16:00–17:00">16:00 — 17:00</option>
+                      <option value="下午 17:00–18:00">17:00 — 18:00</option>
+                    </optgroup>
+                    <optgroup label="其他">
+                      <option value="專案另行聯絡預約時間">專案另約</option>
+                    </optgroup>
+                  </select>
                 </div>
                 <p id="project-note" class="project-note" hidden>
                   本所將先與您進行線上諮詢，再透過 LINE 或電話安排合適的現勘時間。
                 </p>
-                <p class="field-error" id="time-error"></p>
+                <p class="field-error" id="time-error" aria-live="polite"></p>
               </div>
             </div>
           </fieldset>

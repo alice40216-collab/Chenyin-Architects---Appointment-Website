@@ -13,6 +13,7 @@
   const nextMonthButton = document.querySelector("#next-month");
   const projectNote = document.querySelector("#project-note");
   const minimumBookingNote = document.querySelector("#minimum-booking-note");
+  const timeSelect = document.querySelector("#appointment-time");
   const dialog = document.querySelector("#review-dialog");
   const closeDialogButton = document.querySelector("#close-dialog");
   const summary = document.querySelector("#booking-summary");
@@ -164,13 +165,14 @@
       clearError(dateInput, "booking-date-error");
     }
 
-    const timeInput = form.querySelector('input[name="appointment_time"]:checked');
     const timeError = document.querySelector("#time-error");
-    if (!timeInput) {
+    if (!timeSelect.value) {
       timeError.textContent = "請選擇一個預約時段。";
+      timeSelect.setAttribute("aria-invalid", "true");
       valid = false;
     } else {
       timeError.textContent = "";
+      timeSelect.removeAttribute("aria-invalid");
     }
 
     if (!valid) {
@@ -189,7 +191,7 @@
       address: addressInput.value.trim(),
       date: formatDate(selectedDate),
       dateISO: dateInput.value,
-      time: timeInput.value,
+      time: timeSelect.value,
     };
   }
 
@@ -349,7 +351,7 @@
     if (Number.isNaN(parsedDate.getTime()) || parsedDate < minimumBookingDate || toISODate(parsedDate) !== data.date) {
       throw new Error(`預約日期須為 ${toISODate(minimumBookingDate)} 或之後，格式為 YYYY-MM-DD。`);
     }
-    const option = [...form.querySelectorAll('input[name="appointment_time"]')].find((input) => input.value === data.time);
+    const option = [...timeSelect.options].find((item) => item.value === data.time);
     if (!option) throw new Error("預約時段不在可選範圍內。");
 
     applicantInput.value = applicant;
@@ -357,18 +359,17 @@
     addressInput.value = address;
     lineIdInput.value = lineId;
     selectDate(parsedDate);
-    option.checked = true;
-    option.dispatchEvent(new Event("change", { bubbles: true }));
+    timeSelect.value = option.value;
+    timeSelect.dispatchEvent(new Event("change", { bubbles: true }));
   }
 
   previousMonthButton.addEventListener("click", () => moveMonth(-1));
   nextMonthButton.addEventListener("click", () => moveMonth(1));
 
-  form.querySelectorAll('input[name="appointment_time"]').forEach((input) => {
-    input.addEventListener("change", () => {
-      projectNote.hidden = input.value !== "專案另行聯絡預約時間";
-      document.querySelector("#time-error").textContent = "";
-    });
+  timeSelect.addEventListener("change", () => {
+    projectNote.hidden = timeSelect.value !== "專案另行聯絡預約時間";
+    document.querySelector("#time-error").textContent = "";
+    timeSelect.removeAttribute("aria-invalid");
   });
 
   [applicantInput, phoneInput, addressInput, lineIdInput].forEach((input) => {
@@ -417,7 +418,13 @@
               },
               time: {
                 type: "string",
-                enum: ["上午 09:00–11:00", "下午 16:00–18:00", "專案另行聯絡預約時間"],
+                enum: [
+                  "上午 09:00–10:00",
+                  "上午 10:00–11:00",
+                  "下午 16:00–17:00",
+                  "下午 17:00–18:00",
+                  "專案另行聯絡預約時間",
+                ],
               },
             },
             required: ["applicant", "phone", "address", "date", "time"],
