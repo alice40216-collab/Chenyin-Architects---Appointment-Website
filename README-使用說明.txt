@@ -20,3 +20,4 @@ GitHub Pages 上線方式
 - app.js：月曆、表單檢查與預約摘要
 - assets/chen-yin-logo.jpg：事務所 LOGO
 
+表單欄位包含申請人名稱、聯絡電話、申請地址、LINE ID、日期與預約時段。

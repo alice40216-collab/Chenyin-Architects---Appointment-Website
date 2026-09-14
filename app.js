@@ -1,6 +1,7 @@
 (() => {
   const form = document.querySelector("#booking-form");
   const applicantInput = document.querySelector("#applicant");
+  const phoneInput = document.querySelector("#phone");
   const addressInput = document.querySelector("#address");
   const lineIdInput = document.querySelector("#line-id");
   const dateInput = document.querySelector("#booking-date");
@@ -120,6 +121,7 @@
     let valid = true;
     const checks = [
       [applicantInput, "applicant-error", "請輸入申請人名稱。"],
+      [phoneInput, "phone-error", "請輸入申請人聯絡電話。"],
       [lineIdInput, "line-id-error", "請輸入申請人 LINE ID。"],
       [addressInput, "address-error", "請輸入完整申請地址。"],
     ];
@@ -132,6 +134,12 @@
         clearError(input, errorId);
       }
     });
+
+    const phoneDigits = phoneInput.value.replace(/\D/g, "");
+    if (phoneInput.value.trim() && (phoneDigits.length < 8 || phoneDigits.length > 15)) {
+      setError(phoneInput, "phone-error", "請輸入可聯絡的電話號碼。" );
+      valid = false;
+    }
 
     if (!selectedDate) {
       setError(dateInput, "booking-date-error", "請選擇預約日期。" );
@@ -160,6 +168,7 @@
     formStatus.textContent = "";
     return {
       applicant: applicantInput.value.trim(),
+      phone: phoneInput.value.trim(),
       lineId: lineIdInput.value.trim(),
       address: addressInput.value.trim(),
       date: formatDate(selectedDate),
@@ -173,6 +182,7 @@
       "宸胤建築師事務所｜現場勘查預約申請",
       "",
       `申請人名稱：${data.applicant}`,
+      `申請人聯絡電話：${data.phone}`,
       `申請地址：${data.address}`,
       `預約日期：${data.date}`,
       `預約時段：${data.time}`,
@@ -185,6 +195,7 @@
   function openReview(data) {
     const entries = [
       ["申請人名稱", data.applicant],
+      ["聯絡電話", data.phone],
       ["申請地址", data.address],
       ["預約日期", data.date],
       ["預約時段", data.time],
@@ -237,6 +248,7 @@
 
   function setFormData(data) {
     const applicant = data.applicant.trim();
+    const phone = data.phone.trim();
     const address = data.address.trim();
     const lineId = data.lineId.trim();
     const parsedDate = new Date(`${data.date}T00:00:00`);
@@ -247,6 +259,7 @@
     if (!option) throw new Error("預約時段不在可選範圍內。");
 
     applicantInput.value = applicant;
+    phoneInput.value = phone;
     addressInput.value = address;
     lineIdInput.value = lineId;
     selectDate(parsedDate);
@@ -264,7 +277,7 @@
     });
   });
 
-  [applicantInput, addressInput, lineIdInput].forEach((input) => {
+  [applicantInput, phoneInput, addressInput, lineIdInput].forEach((input) => {
     input.addEventListener("input", () => {
       if (input.value.trim()) clearError(input, `${input.id}-error`);
     });
@@ -302,6 +315,7 @@
             type: "object",
             properties: {
               applicant: { type: "string", minLength: 1, description: "申請人姓名或公司名稱" },
+              phone: { type: "string", minLength: 8, description: "申請人聯絡電話" },
               address: { type: "string", minLength: 1, description: "完整申請地址" },
               lineId: { type: "string", minLength: 1, description: "申請人 LINE ID" },
               date: { type: "string", pattern: "^\\d{4}-\\d{2}-\\d{2}$", description: "預約日期，YYYY-MM-DD" },
@@ -310,15 +324,15 @@
                 enum: ["上午 09:00–11:00", "下午 16:00–18:00", "專案另行聯絡預約時間"],
               },
             },
-            required: ["applicant", "address", "lineId", "date", "time"],
+            required: ["applicant", "phone", "address", "lineId", "date", "time"],
             additionalProperties: false,
           },
           annotations: { readOnlyHint: false, untrustedContentHint: false },
           execute(input) {
             if (!input || typeof input !== "object") throw new Error("缺少預約資料。");
-            const required = ["applicant", "address", "lineId", "date", "time"];
+            const required = ["applicant", "phone", "address", "lineId", "date", "time"];
             if (required.some((key) => typeof input[key] !== "string" || !input[key].trim())) {
-              throw new Error("申請人、地址、LINE ID、日期與時段皆為必填。");
+              throw new Error("申請人、聯絡電話、地址、LINE ID、日期與時段皆為必填。");
             }
             setFormData(input);
             const data = validate();

@@ -84,16 +84,18 @@
               </div>
 
               <div class="field">
-                <label for="line-id">申請人 LINE ID <span>*</span></label>
+                <label for="phone">申請人聯絡電話 <span>*</span></label>
                 <input
-                  id="line-id"
-                  name="lineId"
-                  type="text"
-                  autocomplete="off"
-                  placeholder="例如 chenyin123"
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  inputmode="tel"
+                  autocomplete="tel"
+                  maxlength="20"
+                  placeholder="例如 0912-345-678"
                   required
                 />
-                <p class="field-error" id="line-id-error"></p>
+                <p class="field-error" id="phone-error"></p>
               </div>
 
               <div class="field field-wide">
@@ -107,6 +109,19 @@
                   required
                 />
                 <p class="field-error" id="address-error"></p>
+              </div>
+
+              <div class="field field-wide">
+                <label for="line-id">申請人 LINE ID <span>*</span></label>
+                <input
+                  id="line-id"
+                  name="lineId"
+                  type="text"
+                  autocomplete="off"
+                  placeholder="例如 chenyin123；若包含 @ 請一併填寫"
+                  required
+                />
+                <p class="field-error" id="line-id-error"></p>
               </div>
             </div>
           </fieldset>
