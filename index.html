@@ -66,7 +66,9 @@
           <p class="required-note"><span>*</span> 必填欄位</p>
         </div>
 
-        <form id="booking-form" novalidate>
+        <form id="booking-form" action="https://formspree.io/f/mrpgwjgl" method="POST" novalidate>
+          <input type="hidden" name="subject" value="宸胤建築師事務所｜現場勘查預約申請" />
+          <input class="honeypot" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" />
           <fieldset class="form-section">
             <legend>申請資料</legend>
             <div class="field-grid">
@@ -74,7 +76,7 @@
                 <label for="applicant">申請人名稱 <span>*</span></label>
                 <input
                   id="applicant"
-                  name="applicant"
+                  name="name"
                   type="text"
                   autocomplete="name"
                   placeholder="請輸入姓名或公司名稱"
@@ -115,7 +117,7 @@
                 <label for="line-id">申請人 LINE ID <span>*</span></label>
                 <input
                   id="line-id"
-                  name="lineId"
+                  name="line_id"
                   type="text"
                   autocomplete="off"
                   placeholder="例如 chenyin123；若包含 @ 請一併填寫"
@@ -148,7 +150,7 @@
                   </div>
                   <div id="calendar-days" class="calendar-days" role="grid" aria-label="選擇預約日期"></div>
                 </div>
-                <input id="booking-date" name="date" type="hidden" required />
+                <input id="booking-date" name="appointment_date" type="hidden" required />
                 <p id="selected-date" class="selected-date" aria-live="polite">尚未選擇日期</p>
                 <p class="field-error" id="booking-date-error"></p>
               </div>
@@ -157,17 +159,17 @@
                 <p class="time-label" id="time-label">預約時段 <span>*</span></p>
                 <div class="time-options" role="radiogroup" aria-labelledby="time-label">
                   <label class="time-option">
-                    <input type="radio" name="time" value="上午 09:00–11:00" />
+                    <input type="radio" name="appointment_time" value="上午 09:00–11:00" />
                     <span class="time-copy"><b>上午</b><small>09:00 — 11:00</small></span>
                     <span class="radio-mark" aria-hidden="true"></span>
                   </label>
                   <label class="time-option">
-                    <input type="radio" name="time" value="下午 16:00–18:00" />
+                    <input type="radio" name="appointment_time" value="下午 16:00–18:00" />
                     <span class="time-copy"><b>下午</b><small>16:00 — 18:00</small></span>
                     <span class="radio-mark" aria-hidden="true"></span>
                   </label>
                   <label class="time-option">
-                    <input type="radio" name="time" value="專案另行聯絡預約時間" />
+                    <input type="radio" name="appointment_time" value="專案另行聯絡預約時間" />
                     <span class="time-copy"><b>專案另約</b><small>由專人聯絡確認</small></span>
                     <span class="radio-mark" aria-hidden="true"></span>
                   </label>
@@ -181,7 +183,7 @@
           </fieldset>
 
           <div class="form-footer">
-            <p>送出後將開啟您的郵件程式，請確認寄出預約信件。</p>
+            <p>上述資料僅供本所聯絡與安排現場勘查使用。</p>
             <button class="submit-button" type="submit">
               <span>送出預約申請</span>
               <span aria-hidden="true">↗</span>
@@ -208,17 +210,21 @@
     <div id="review-dialog" class="dialog-backdrop" hidden>
       <section class="review-dialog" role="dialog" aria-modal="true" aria-labelledby="review-title">
         <button id="close-dialog" class="dialog-close" type="button" aria-label="關閉確認視窗">×</button>
-        <p class="section-index">FINAL CHECK</p>
+        <p id="dialog-kicker" class="section-index">FINAL CHECK</p>
         <h2 id="review-title">確認預約資料</h2>
-        <p class="dialog-intro">請確認以下資訊。點選寄出後，才會正式送達本所信箱。</p>
+        <p id="dialog-intro" class="dialog-intro">請確認以下資訊。點選送出後，預約資料將直接送達本所信箱。</p>
         <dl id="booking-summary" class="booking-summary"></dl>
-        <div class="dialog-actions">
-          <a id="email-booking" class="submit-button" href="#">
-            <span>開啟郵件寄出</span><span aria-hidden="true">↗</span>
-          </a>
+        <div id="success-panel" class="success-panel" hidden>
+          <span class="success-mark" aria-hidden="true">✓</span>
+          <p>本所將透過 LINE 或電話與您確認日期與時段。</p>
+        </div>
+        <div id="dialog-actions" class="dialog-actions">
+          <button id="send-booking" class="submit-button" type="button">
+            <span id="send-booking-label">確認並送出</span><span aria-hidden="true">↗</span>
+          </button>
           <button id="copy-booking" class="secondary-button" type="button">複製預約內容</button>
         </div>
-        <p id="copy-status" class="copy-status" aria-live="polite"></p>
+        <p id="dialog-status" class="copy-status" aria-live="assertive"></p>
       </section>
     </div>
   </body>

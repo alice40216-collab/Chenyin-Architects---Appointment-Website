@@ -1,4 +1,5 @@
 (() => {
+  const FORM_ENDPOINT = "https://formspree.io/f/mrpgwjgl";
   const form = document.querySelector("#booking-form");
   const applicantInput = document.querySelector("#applicant");
   const phoneInput = document.querySelector("#phone");
@@ -14,9 +15,15 @@
   const dialog = document.querySelector("#review-dialog");
   const closeDialogButton = document.querySelector("#close-dialog");
   const summary = document.querySelector("#booking-summary");
-  const emailBooking = document.querySelector("#email-booking");
+  const dialogKicker = document.querySelector("#dialog-kicker");
+  const dialogTitle = document.querySelector("#review-title");
+  const dialogIntro = document.querySelector("#dialog-intro");
+  const dialogActions = document.querySelector("#dialog-actions");
+  const successPanel = document.querySelector("#success-panel");
+  const sendBookingButton = document.querySelector("#send-booking");
+  const sendBookingLabel = document.querySelector("#send-booking-label");
   const copyBooking = document.querySelector("#copy-booking");
-  const copyStatus = document.querySelector("#copy-status");
+  const dialogStatus = document.querySelector("#dialog-status");
   const formStatus = document.querySelector("#form-status");
 
   const today = startOfDay(new Date());
@@ -24,6 +31,8 @@
   let selectedDate = null;
   let lastFocusedElement = null;
   let preparedText = "";
+  let preparedData = null;
+  let sending = false;
 
   function startOfDay(date) {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -148,7 +157,7 @@
       clearError(dateInput, "booking-date-error");
     }
 
-    const timeInput = form.querySelector('input[name="time"]:checked');
+    const timeInput = form.querySelector('input[name="appointment_time"]:checked');
     const timeError = document.querySelector("#time-error");
     if (!timeInput) {
       timeError.textContent = "請選擇一個預約時段。";
@@ -213,10 +222,18 @@
       summary.append(row);
     });
 
+    preparedData = data;
     preparedText = bookingText(data);
-    const subject = `現場勘查預約申請｜${data.applicant}｜${data.dateISO}`;
-    emailBooking.href = `mailto:services@chenyin-arch.com.tw?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(preparedText)}`;
-    copyStatus.textContent = "";
+    dialogKicker.textContent = "FINAL CHECK";
+    dialogTitle.textContent = "確認預約資料";
+    dialogIntro.textContent = "請確認以下資訊。點選送出後，預約資料將直接送達本所信箱。";
+    summary.hidden = false;
+    successPanel.hidden = true;
+    dialogActions.hidden = false;
+    sendBookingButton.disabled = false;
+    sendBookingLabel.textContent = "確認並送出";
+    dialogStatus.classList.remove("is-error");
+    dialogStatus.textContent = "";
     lastFocusedElement = document.activeElement;
     dialog.hidden = false;
     document.body.style.overflow = "hidden";
@@ -224,6 +241,7 @@
   }
 
   function closeReview() {
+    if (sending) return;
     dialog.hidden = true;
     document.body.style.overflow = "";
     lastFocusedElement?.focus();
@@ -232,7 +250,8 @@
   async function copyPreparedText() {
     try {
       await navigator.clipboard.writeText(preparedText);
-      copyStatus.textContent = "預約內容已複製。";
+      dialogStatus.classList.remove("is-error");
+      dialogStatus.textContent = "預約內容已複製。";
     } catch {
       const textarea = document.createElement("textarea");
       textarea.value = preparedText;
@@ -242,7 +261,75 @@
       textarea.select();
       document.execCommand("copy");
       textarea.remove();
-      copyStatus.textContent = "預約內容已複製。";
+      dialogStatus.classList.remove("is-error");
+      dialogStatus.textContent = "預約內容已複製。";
+    }
+  }
+
+  function resetFormAfterSuccess() {
+    form.reset();
+    selectedDate = null;
+    dateInput.value = "";
+    selectedDateLabel.textContent = "尚未選擇日期";
+    projectNote.hidden = true;
+    viewDate = new Date(today.getFullYear(), today.getMonth(), 1);
+    renderCalendar();
+  }
+
+  async function submitBooking() {
+    if (sending || !preparedData) return;
+
+    sending = true;
+    sendBookingButton.disabled = true;
+    sendBookingLabel.textContent = "送出中…";
+    dialogStatus.classList.remove("is-error");
+    dialogStatus.textContent = "正在送出預約資料，請稍候。";
+
+    const payload = new FormData(form);
+    payload.set("subject", `現場勘查預約申請｜${preparedData.applicant}｜${preparedData.dateISO}`);
+    payload.set("name", preparedData.applicant);
+    payload.set("phone", preparedData.phone);
+    payload.set("address", preparedData.address);
+    payload.set("appointment_date", preparedData.date);
+    payload.set("appointment_time", preparedData.time);
+    payload.set("line_id", preparedData.lineId);
+
+    try {
+      const response = await fetch(FORM_ENDPOINT, {
+        method: "POST",
+        body: payload,
+        headers: { Accept: "application/json" },
+      });
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          throw new Error("送出次數過多，請稍候再試。" );
+        }
+        const message = Array.isArray(result.errors)
+          ? result.errors.map((error) => error.message).filter(Boolean).join(" ")
+          : "";
+        throw new Error(message || "預約資料送出失敗，請稍後再試。" );
+      }
+
+      dialogKicker.textContent = "REQUEST RECEIVED";
+      dialogTitle.textContent = "預約申請已送出";
+      dialogIntro.textContent = "您的預約資料已送達宸胤建築師事務所。";
+      summary.hidden = true;
+      dialogActions.hidden = true;
+      successPanel.hidden = false;
+      dialogStatus.textContent = "";
+      resetFormAfterSuccess();
+      preparedData = null;
+    } catch (error) {
+      dialogStatus.classList.add("is-error");
+      dialogStatus.textContent = error instanceof Error
+        ? `${error.message} 您也可以先複製預約內容，或致電本所。`
+        : "預約資料送出失敗，請稍後再試。";
+      sendBookingButton.disabled = false;
+      sendBookingLabel.textContent = "重新送出";
+    } finally {
+      sending = false;
     }
   }
 
@@ -255,7 +342,7 @@
     if (Number.isNaN(parsedDate.getTime()) || parsedDate < today || toISODate(parsedDate) !== data.date) {
       throw new Error("預約日期必須是今天或未來日期，格式為 YYYY-MM-DD。");
     }
-    const option = [...form.querySelectorAll('input[name="time"]')].find((input) => input.value === data.time);
+    const option = [...form.querySelectorAll('input[name="appointment_time"]')].find((input) => input.value === data.time);
     if (!option) throw new Error("預約時段不在可選範圍內。");
 
     applicantInput.value = applicant;
@@ -270,7 +357,7 @@
   previousMonthButton.addEventListener("click", () => moveMonth(-1));
   nextMonthButton.addEventListener("click", () => moveMonth(1));
 
-  form.querySelectorAll('input[name="time"]').forEach((input) => {
+  form.querySelectorAll('input[name="appointment_time"]').forEach((input) => {
     input.addEventListener("change", () => {
       projectNote.hidden = input.value !== "專案另行聯絡預約時間";
       document.querySelector("#time-error").textContent = "";
@@ -297,9 +384,7 @@
     if (event.key === "Escape" && !dialog.hidden) closeReview();
   });
   copyBooking.addEventListener("click", copyPreparedText);
-  emailBooking.addEventListener("click", () => {
-    copyStatus.textContent = "郵件已開啟；請在郵件程式中確認寄出。";
-  });
+  sendBookingButton.addEventListener("click", submitBooking);
 
   function registerWebMCP() {
     const context = document.modelContext;

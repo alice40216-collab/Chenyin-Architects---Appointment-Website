@@ -11,8 +11,9 @@ GitHub Pages 上線方式
 8. 等待 GitHub 完成發布後，即可從 Pages 顯示的網址開啟網站。
 
 預約送出方式
-本版本適用於 GitHub Pages 靜態網站。客戶確認資料後，網站會開啟裝置的郵件程式，
-並預先填好寄給 services@chenyin-arch.com.tw 的預約內容；客戶仍需在郵件程式按下寄出。
+本版本已連接 Formspree 表單 https://formspree.io/f/mrpgwjgl。
+客戶確認資料後，可直接由網站送出至 Formspree 中完成驗證的公司收件信箱。
+若未收到通知，請至 Formspree 後台檢查 Submissions、Spam 與收件信箱驗證狀態。
 
 檔案說明
 - index.html：網站主頁
