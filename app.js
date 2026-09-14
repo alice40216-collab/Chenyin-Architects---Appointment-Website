@@ -13,7 +13,13 @@
   const nextMonthButton = document.querySelector("#next-month");
   const projectNote = document.querySelector("#project-note");
   const minimumBookingNote = document.querySelector("#minimum-booking-note");
-  const timeSelect = document.querySelector("#appointment-time");
+  const timeInput = document.querySelector("#appointment-time");
+  const morningTimeSelect = document.querySelector("#morning-time");
+  const afternoonTimeSelect = document.querySelector("#afternoon-time");
+  const morningTimeRow = document.querySelector("#morning-time-row");
+  const afternoonTimeRow = document.querySelector("#afternoon-time-row");
+  const projectTimeButton = document.querySelector("#project-time");
+  const timeError = document.querySelector("#time-error");
   const dialog = document.querySelector("#review-dialog");
   const closeDialogButton = document.querySelector("#close-dialog");
   const summary = document.querySelector("#booking-summary");
@@ -29,6 +35,7 @@
   const formStatus = document.querySelector("#form-status");
 
   const LEAD_DAYS = 7;
+  const PROJECT_TIME = "專案另行聯絡預約時間";
   const today = startOfDay(new Date());
   const minimumBookingDate = new Date(today);
   minimumBookingDate.setDate(minimumBookingDate.getDate() + LEAD_DAYS);
@@ -132,6 +139,51 @@
     document.getElementById(errorId).textContent = "";
   }
 
+  function selectContainsValue(select, value) {
+    return Boolean(value) && [...select.options].some((option) => option.value === value);
+  }
+
+  function isAllowedTime(value) {
+    return value === PROJECT_TIME ||
+      selectContainsValue(morningTimeSelect, value) ||
+      selectContainsValue(afternoonTimeSelect, value);
+  }
+
+  function clearTimeError() {
+    timeError.textContent = "";
+    morningTimeSelect.removeAttribute("aria-invalid");
+    afternoonTimeSelect.removeAttribute("aria-invalid");
+    projectTimeButton.removeAttribute("aria-invalid");
+  }
+
+  function setTimeSelection(value) {
+    if (value && !isAllowedTime(value)) return false;
+
+    const morningSelected = selectContainsValue(morningTimeSelect, value);
+    const afternoonSelected = selectContainsValue(afternoonTimeSelect, value);
+    const projectSelected = value === PROJECT_TIME;
+
+    morningTimeSelect.value = morningSelected ? value : "";
+    afternoonTimeSelect.value = afternoonSelected ? value : "";
+    timeInput.value = value;
+
+    morningTimeRow.classList.toggle("is-selected", morningSelected);
+    afternoonTimeRow.classList.toggle("is-selected", afternoonSelected);
+    morningTimeSelect.classList.toggle("is-empty", !morningSelected);
+    afternoonTimeSelect.classList.toggle("is-empty", !afternoonSelected);
+    projectTimeButton.setAttribute("aria-pressed", String(projectSelected));
+    projectNote.hidden = !projectSelected;
+    clearTimeError();
+    return true;
+  }
+
+  function showTimeError() {
+    timeError.textContent = "請選擇一個預約時段。";
+    morningTimeSelect.setAttribute("aria-invalid", "true");
+    afternoonTimeSelect.setAttribute("aria-invalid", "true");
+    projectTimeButton.setAttribute("aria-invalid", "true");
+  }
+
   function validate() {
     let valid = true;
     const checks = [
@@ -165,14 +217,11 @@
       clearError(dateInput, "booking-date-error");
     }
 
-    const timeError = document.querySelector("#time-error");
-    if (!timeSelect.value) {
-      timeError.textContent = "請選擇一個預約時段。";
-      timeSelect.setAttribute("aria-invalid", "true");
+    if (!timeInput.value) {
+      showTimeError();
       valid = false;
     } else {
-      timeError.textContent = "";
-      timeSelect.removeAttribute("aria-invalid");
+      clearTimeError();
     }
 
     if (!valid) {
@@ -191,7 +240,7 @@
       address: addressInput.value.trim(),
       date: formatDate(selectedDate),
       dateISO: dateInput.value,
-      time: timeSelect.value,
+      time: timeInput.value,
     };
   }
 
@@ -277,6 +326,7 @@
 
   function resetFormAfterSuccess() {
     form.reset();
+    setTimeSelection("");
     selectedDate = null;
     dateInput.value = "";
     selectedDateLabel.textContent = "尚未選擇日期";
@@ -351,25 +401,37 @@
     if (Number.isNaN(parsedDate.getTime()) || parsedDate < minimumBookingDate || toISODate(parsedDate) !== data.date) {
       throw new Error(`預約日期須為 ${toISODate(minimumBookingDate)} 或之後，格式為 YYYY-MM-DD。`);
     }
-    const option = [...timeSelect.options].find((item) => item.value === data.time);
-    if (!option) throw new Error("預約時段不在可選範圍內。");
+    if (!isAllowedTime(data.time)) throw new Error("預約時段不在可選範圍內。");
 
     applicantInput.value = applicant;
     phoneInput.value = phone;
     addressInput.value = address;
     lineIdInput.value = lineId;
     selectDate(parsedDate);
-    timeSelect.value = option.value;
-    timeSelect.dispatchEvent(new Event("change", { bubbles: true }));
+    setTimeSelection(data.time);
   }
 
   previousMonthButton.addEventListener("click", () => moveMonth(-1));
   nextMonthButton.addEventListener("click", () => moveMonth(1));
 
-  timeSelect.addEventListener("change", () => {
-    projectNote.hidden = timeSelect.value !== "專案另行聯絡預約時間";
-    document.querySelector("#time-error").textContent = "";
-    timeSelect.removeAttribute("aria-invalid");
+  morningTimeSelect.addEventListener("change", () => {
+    if (morningTimeSelect.value) {
+      setTimeSelection(morningTimeSelect.value);
+    } else if (timeInput.value.startsWith("上午 ")) {
+      setTimeSelection("");
+    }
+  });
+
+  afternoonTimeSelect.addEventListener("change", () => {
+    if (afternoonTimeSelect.value) {
+      setTimeSelection(afternoonTimeSelect.value);
+    } else if (timeInput.value.startsWith("下午 ")) {
+      setTimeSelection("");
+    }
+  });
+
+  projectTimeButton.addEventListener("click", () => {
+    setTimeSelection(PROJECT_TIME);
   });
 
   [applicantInput, phoneInput, addressInput, lineIdInput].forEach((input) => {
@@ -451,6 +513,7 @@
   }
 
   minimumBookingNote.textContent = `最早可預約：${formatDate(minimumBookingDate)}（須至少提前 ${LEAD_DAYS} 天）`;
+  setTimeSelection("");
   renderCalendar();
   registerWebMCP();
 })();

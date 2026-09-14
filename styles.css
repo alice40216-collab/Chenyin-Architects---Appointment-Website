@@ -493,15 +493,61 @@ a {
   min-width: 0;
 }
 
+.time-label {
+  margin-bottom: 14px;
+  font-size: 1rem;
+}
+
+.time-options {
+  display: grid;
+  gap: 12px;
+}
+
+.time-option-row,
+.time-project-option {
+  min-height: 76px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.018);
+  border: 1px solid var(--line);
+  transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.time-option-row {
+  display: grid;
+  grid-template-columns: minmax(64px, 0.48fr) minmax(150px, 1fr);
+  gap: 14px;
+  align-items: center;
+}
+
+.time-option-row:hover,
+.time-project-option:hover {
+  border-color: var(--line-strong);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.time-option-row.is-selected,
+.time-project-option[aria-pressed="true"] {
+  border-color: var(--gold);
+  background: rgba(201, 173, 120, 0.09);
+}
+
+.time-option-title {
+  color: var(--ivory);
+  font-size: 1.1rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+}
+
 .time-select-wrap {
   position: relative;
+  min-width: 0;
 }
 
 .time-select-wrap::after {
   content: "";
   position: absolute;
   top: 50%;
-  right: 20px;
+  right: 16px;
   width: 9px;
   height: 9px;
   border-right: 1px solid var(--gold);
@@ -512,20 +558,20 @@ a {
 
 .time-select {
   width: 100%;
-  min-height: 60px;
-  padding: 15px 54px 15px 18px;
+  min-height: 50px;
+  padding: 11px 44px 11px 14px;
   appearance: none;
   color: var(--ivory);
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid var(--line);
+  background: rgba(9, 9, 9, 0.42);
+  border: 1px solid var(--line-strong);
   border-radius: 0;
   outline: none;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.05rem;
   transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
 }
 
-.time-select:invalid {
+.time-select.is-empty {
   color: var(--muted);
 }
 
@@ -546,6 +592,54 @@ a {
 .time-select optgroup {
   color: #20201e;
   background: var(--ivory);
+}
+
+.time-project-option {
+  display: grid;
+  width: 100%;
+  grid-template-columns: minmax(92px, 0.48fr) minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.time-project-option:focus-visible {
+  border-color: var(--gold);
+  outline: 2px solid var(--ivory);
+  outline-offset: 3px;
+}
+
+.time-project-option[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.time-option-note {
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.selection-mark {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+}
+
+.time-project-option[aria-pressed="true"] .selection-mark {
+  border-color: var(--gold);
+}
+
+.time-project-option[aria-pressed="true"] .selection-mark::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  background: var(--gold);
+  border-radius: 50%;
 }
 
 .project-note {

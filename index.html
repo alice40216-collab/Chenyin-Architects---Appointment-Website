@@ -156,29 +156,48 @@
               </div>
 
               <div class="time-panel">
-                <label class="time-label" id="time-label" for="appointment-time">預約時段 <span>*</span></label>
-                <div class="time-select-wrap">
-                  <select
-                    id="appointment-time"
-                    class="time-select"
-                    name="appointment_time"
-                    aria-describedby="time-error project-note"
-                    required
+                <p class="time-label" id="time-label">預約時段 <span>*</span></p>
+                <div
+                  class="time-options"
+                  role="group"
+                  aria-labelledby="time-label"
+                  aria-describedby="time-error project-note"
+                >
+                  <div id="morning-time-row" class="time-option-row">
+                    <label class="time-option-title" for="morning-time">上午</label>
+                    <div class="time-select-wrap">
+                      <select id="morning-time" class="time-select" aria-label="選擇上午時段">
+                        <option value="">選擇時間</option>
+                        <option value="上午 09:00–10:00">09:00 — 10:00</option>
+                        <option value="上午 10:00–11:00">10:00 — 11:00</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div id="afternoon-time-row" class="time-option-row">
+                    <label class="time-option-title" for="afternoon-time">下午</label>
+                    <div class="time-select-wrap">
+                      <select id="afternoon-time" class="time-select" aria-label="選擇下午時段">
+                        <option value="">選擇時間</option>
+                        <option value="下午 16:00–17:00">16:00 — 17:00</option>
+                        <option value="下午 17:00–18:00">17:00 — 18:00</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <button
+                    id="project-time"
+                    class="time-project-option"
+                    type="button"
+                    aria-pressed="false"
+                    aria-controls="project-note"
                   >
-                    <option value="" selected disabled>請選擇預約時段</option>
-                    <optgroup label="上午">
-                      <option value="上午 09:00–10:00">09:00 — 10:00</option>
-                      <option value="上午 10:00–11:00">10:00 — 11:00</option>
-                    </optgroup>
-                    <optgroup label="下午">
-                      <option value="下午 16:00–17:00">16:00 — 17:00</option>
-                      <option value="下午 17:00–18:00">17:00 — 18:00</option>
-                    </optgroup>
-                    <optgroup label="其他">
-                      <option value="專案另行聯絡預約時間">專案另約</option>
-                    </optgroup>
-                  </select>
+                    <span class="time-option-title">專案另約</span>
+                    <span class="time-option-note">由專人於諮詢後確認</span>
+                    <span class="selection-mark" aria-hidden="true"></span>
+                  </button>
                 </div>
+                <input id="appointment-time" name="appointment_time" type="hidden" />
                 <p id="project-note" class="project-note" hidden>
                   本所將先與您進行線上諮詢，再透過 LINE 或電話安排合適的現勘時間。
                 </p>
