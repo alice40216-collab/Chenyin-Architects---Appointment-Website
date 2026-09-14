@@ -86,11 +86,10 @@ a {
 
 .brand-image-wrap {
   display: block;
-  width: min(360px, 48vw);
-  aspect-ratio: 573 / 165;
+  width: min(440px, 56vw);
+  aspect-ratio: 2170 / 725;
   overflow: hidden;
-  background: #fff;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.07);
+  background: #090909;
 }
 
 .brand img {
@@ -98,7 +97,6 @@ a {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: grayscale(1) contrast(1.14);
 }
 
 .header-note {
@@ -364,6 +362,8 @@ a {
 }
 
 .calendar {
+  width: 100%;
+  max-width: 420px;
   padding: 20px;
   color: #20201e;
   background: var(--ivory);
@@ -412,7 +412,7 @@ a {
 .weekdays,
 .calendar-days {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
 }
 
 .weekdays span {
@@ -428,9 +428,11 @@ a {
   position: relative;
   display: grid;
   place-items: center;
+  width: min(100%, 44px);
   min-width: 0;
-  min-height: 40px;
+  min-height: 0;
   aspect-ratio: 1;
+  justify-self: center;
   padding: 0;
   color: #282824;
   background: transparent;
@@ -978,8 +980,9 @@ a {
   }
 
   .calendar-day {
+    width: min(100%, 40px);
     min-width: 0;
-    min-height: 38px;
+    min-height: 0;
   }
 
   .review-dialog {
