@@ -12,6 +12,7 @@
   const previousMonthButton = document.querySelector("#previous-month");
   const nextMonthButton = document.querySelector("#next-month");
   const projectNote = document.querySelector("#project-note");
+  const minimumBookingNote = document.querySelector("#minimum-booking-note");
   const dialog = document.querySelector("#review-dialog");
   const closeDialogButton = document.querySelector("#close-dialog");
   const summary = document.querySelector("#booking-summary");
@@ -26,8 +27,11 @@
   const dialogStatus = document.querySelector("#dialog-status");
   const formStatus = document.querySelector("#form-status");
 
+  const LEAD_DAYS = 7;
   const today = startOfDay(new Date());
-  let viewDate = new Date(today.getFullYear(), today.getMonth(), 1);
+  const minimumBookingDate = new Date(today);
+  minimumBookingDate.setDate(minimumBookingDate.getDate() + LEAD_DAYS);
+  let viewDate = new Date(minimumBookingDate.getFullYear(), minimumBookingDate.getMonth(), 1);
   let selectedDate = null;
   let lastFocusedElement = null;
   let preparedText = "";
@@ -87,7 +91,7 @@
         button.classList.add("selected");
         button.setAttribute("aria-selected", "true");
       }
-      if (day < today) {
+      if (day < minimumBookingDate) {
         button.disabled = true;
         button.setAttribute("aria-disabled", "true");
       }
@@ -96,11 +100,12 @@
       calendarDays.append(button);
     }
 
-    const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    previousMonthButton.disabled = viewDate <= thisMonth;
+    const earliestMonth = new Date(minimumBookingDate.getFullYear(), minimumBookingDate.getMonth(), 1);
+    previousMonthButton.disabled = viewDate <= earliestMonth;
   }
 
   function selectDate(date) {
+    if (startOfDay(date) < minimumBookingDate) return;
     selectedDate = startOfDay(date);
     viewDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
     dateInput.value = toISODate(selectedDate);
@@ -152,6 +157,9 @@
     if (!selectedDate) {
       setError(dateInput, "booking-date-error", "請選擇預約日期。" );
       valid = false;
+    } else if (selectedDate < minimumBookingDate) {
+      setError(dateInput, "booking-date-error", `請選擇 ${formatDate(minimumBookingDate)} 或之後的日期。`);
+      valid = false;
     } else {
       clearError(dateInput, "booking-date-error");
     }
@@ -187,7 +195,7 @@
 
   function bookingText(data) {
     return [
-      "宸胤建築師事務所｜現場勘查預約申請",
+      "宸胤建築師事務所｜線上諮詢及現勘安排申請",
       "",
       `申請人名稱：${data.applicant}`,
       `申請人聯絡電話：${data.phone}`,
@@ -196,7 +204,7 @@
       `預約時段：${data.time}`,
       `申請人 LINE ID：${data.lineId || "未提供"}`,
       "",
-      "備註：實際勘查時間以事務所確認通知為準。",
+      "備註：本所將先進行線上諮詢，實際現勘時間以事務所確認通知為準。",
     ].join("\n");
   }
 
@@ -224,8 +232,8 @@
     preparedData = data;
     preparedText = bookingText(data);
     dialogKicker.textContent = "FINAL CHECK";
-    dialogTitle.textContent = "確認預約資料";
-    dialogIntro.textContent = "請確認以下資訊。點選送出後，預約資料將直接送達本所信箱。";
+    dialogTitle.textContent = "確認諮詢與現勘安排資料";
+    dialogIntro.textContent = "請確認以下資訊。點選送出後，申請資料將直接送達本所信箱。";
     summary.hidden = false;
     successPanel.hidden = true;
     dialogActions.hidden = false;
@@ -271,7 +279,7 @@
     dateInput.value = "";
     selectedDateLabel.textContent = "尚未選擇日期";
     projectNote.hidden = true;
-    viewDate = new Date(today.getFullYear(), today.getMonth(), 1);
+    viewDate = new Date(minimumBookingDate.getFullYear(), minimumBookingDate.getMonth(), 1);
     renderCalendar();
   }
 
@@ -285,7 +293,7 @@
     dialogStatus.textContent = "正在送出預約資料，請稍候。";
 
     const payload = new FormData(form);
-    payload.set("subject", `現場勘查預約申請｜${preparedData.applicant}｜${preparedData.dateISO}`);
+    payload.set("subject", `線上諮詢及現勘安排申請｜${preparedData.applicant}｜${preparedData.dateISO}`);
     payload.set("name", preparedData.applicant);
     payload.set("phone", preparedData.phone);
     payload.set("address", preparedData.address);
@@ -312,8 +320,8 @@
       }
 
       dialogKicker.textContent = "REQUEST RECEIVED";
-      dialogTitle.textContent = "預約申請已送出";
-      dialogIntro.textContent = "您的預約資料已送達宸胤建築師事務所。";
+      dialogTitle.textContent = "申請已送出";
+      dialogIntro.textContent = "您的線上諮詢與現勘安排資料已送達宸胤建築師事務所。";
       summary.hidden = true;
       dialogActions.hidden = true;
       successPanel.hidden = false;
@@ -338,8 +346,8 @@
     const address = data.address.trim();
     const lineId = typeof data.lineId === "string" ? data.lineId.trim() : "";
     const parsedDate = new Date(`${data.date}T00:00:00`);
-    if (Number.isNaN(parsedDate.getTime()) || parsedDate < today || toISODate(parsedDate) !== data.date) {
-      throw new Error("預約日期必須是今天或未來日期，格式為 YYYY-MM-DD。");
+    if (Number.isNaN(parsedDate.getTime()) || parsedDate < minimumBookingDate || toISODate(parsedDate) !== data.date) {
+      throw new Error(`預約日期須為 ${toISODate(minimumBookingDate)} 或之後，格式為 YYYY-MM-DD。`);
     }
     const option = [...form.querySelectorAll('input[name="appointment_time"]')].find((input) => input.value === data.time);
     if (!option) throw new Error("預約時段不在可選範圍內。");
@@ -393,8 +401,8 @@
       void Promise.resolve(
         context.registerTool({
           name: "prepare_site_visit_request",
-          title: "準備現場勘查預約",
-          description: "填入預約資料，並在網站開啟送出前的最終確認畫面。此工具不會自動寄出郵件。",
+          title: "準備線上諮詢與現勘安排",
+          description: "填入線上諮詢及現勘安排資料，並在網站開啟送出前的最終確認畫面。此工具不會自動寄出郵件。",
           inputSchema: {
             type: "object",
             properties: {
@@ -402,7 +410,11 @@
               phone: { type: "string", minLength: 8, description: "申請人聯絡電話" },
               address: { type: "string", minLength: 1, description: "完整申請地址" },
               lineId: { type: "string", description: "申請人 LINE ID（選填）" },
-              date: { type: "string", pattern: "^\\d{4}-\\d{2}-\\d{2}$", description: "預約日期，YYYY-MM-DD" },
+              date: {
+                type: "string",
+                pattern: "^\\d{4}-\\d{2}-\\d{2}$",
+                description: `預約日期，YYYY-MM-DD；最早 ${toISODate(minimumBookingDate)}（今日起第 7 天）`,
+              },
               time: {
                 type: "string",
                 enum: ["上午 09:00–11:00", "下午 16:00–18:00", "專案另行聯絡預約時間"],
@@ -431,6 +443,7 @@
     }
   }
 
+  minimumBookingNote.textContent = `最早可預約：${formatDate(minimumBookingDate)}（須至少提前 ${LEAD_DAYS} 天）`;
   renderCalendar();
   registerWebMCP();
 })();

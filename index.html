@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="宸胤建築師事務所現場勘查線上預約。填寫申請資料、選擇日期與時段，由本所與您聯繫確認。"
+      content="宸胤建築師事務所線上諮詢與現場勘查安排預約。填寫申請資料、選擇至少 7 天後的希望日期與時段，由本所先行諮詢並聯繫確認。"
     />
     <meta name="theme-color" content="#090909" />
-    <title>預約現場勘查｜宸胤建築師事務所</title>
+    <title>預約線上諮詢及安排現勘時間｜宸胤建築師事務所</title>
     <link
       rel="icon"
       type="image/svg+xml"
@@ -33,27 +33,27 @@
       </a>
       <div class="header-note">
         <span aria-hidden="true"></span>
-        ONLINE RESERVATION
+        CONSULTATION · SITE VISIT
       </div>
     </header>
 
     <main id="main" class="main-layout">
       <section class="intro" aria-labelledby="page-title">
-        <p class="eyebrow">SITE VISIT · 線上預約</p>
-        <h1 id="page-title">預約現場<br /><em>勘查時間</em></h1>
+        <p class="eyebrow">CONSULTATION · 線上預約</p>
+        <h1 id="page-title">預約線上諮詢<br /><em>及安排現勘時間</em></h1>
         <p class="intro-copy">
-          填寫申請資料並選擇方便的日期與時段。本所收到預約申請後，將與您聯繫確認。
+          請填寫申請資料並提出希望的日期與時段。本所收到申請後，將先與您進行線上諮詢，再確認現場勘查安排。
         </p>
 
-        <ol class="process" aria-label="預約流程">
-          <li><b>01</b><span>填寫申請資訊</span></li>
-          <li><b>02</b><span>選擇日期與時段</span></li>
-          <li><b>03</b><span>本所聯繫確認</span></li>
+        <ol class="process" aria-label="線上諮詢及現勘安排流程">
+          <li><b>01</b><span>填寫申請與希望時段</span></li>
+          <li><b>02</b><span>本所聯繫線上諮詢</span></li>
+          <li><b>03</b><span>確認現勘安排</span></li>
         </ol>
 
         <div class="availability-note">
           <span class="note-mark" aria-hidden="true"></span>
-          <p><b>預約提醒</b><br />實際勘查時間以本所確認通知為準。</p>
+          <p><b>預約提醒</b><br />本所將先進行諮詢；實際現勘時間以確認通知為準。</p>
         </div>
       </section>
 
@@ -61,13 +61,13 @@
         <div class="card-heading">
           <div>
             <p class="section-index">RESERVATION / 01</p>
-            <h2 id="form-title">預約現場勘查</h2>
+            <h2 id="form-title">預約線上諮詢及安排現勘時間</h2>
           </div>
           <p class="required-note"><span>*</span> 必填欄位</p>
         </div>
 
         <form id="booking-form" action="https://formspree.io/f/mrpgwjgl" method="POST" novalidate>
-          <input type="hidden" name="subject" value="宸胤建築師事務所｜現場勘查預約申請" />
+          <input type="hidden" name="subject" value="宸胤建築師事務所｜線上諮詢及現勘安排申請" />
           <input class="honeypot" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" />
           <fieldset class="form-section">
             <legend>申請資料</legend>
@@ -132,7 +132,8 @@
             <div class="schedule-grid">
               <div class="calendar-panel">
                 <label class="calendar-label" id="date-label">預約日期 <span>*</span></label>
-                <div class="calendar" aria-labelledby="date-label">
+                <p id="minimum-booking-note" class="booking-lead-note" aria-live="polite"></p>
+                <div class="calendar" aria-labelledby="date-label" aria-describedby="minimum-booking-note">
                   <div class="calendar-toolbar">
                     <p id="calendar-month" aria-live="polite"></p>
                     <div class="month-actions">
@@ -169,12 +170,12 @@
                   </label>
                   <label class="time-option">
                     <input type="radio" name="appointment_time" value="專案另行聯絡預約時間" />
-                    <span class="time-copy"><b>專案另約</b><small>由專人聯絡確認</small></span>
+                    <span class="time-copy"><b>專案另約</b><small>由專人於諮詢後確認</small></span>
                     <span class="radio-mark" aria-hidden="true"></span>
                   </label>
                 </div>
                 <p id="project-note" class="project-note" hidden>
-                  選擇專案另約後，我們將透過 LINE 或電話與您安排合適時間。
+                  本所將先與您進行線上諮詢，再透過 LINE 或電話安排合適的現勘時間。
                 </p>
                 <p class="field-error" id="time-error"></p>
               </div>
@@ -182,9 +183,9 @@
           </fieldset>
 
           <div class="form-footer">
-            <p>上述資料僅供本所聯絡與安排現場勘查使用。</p>
+            <p>上述資料僅供本所聯絡諮詢與安排現場勘查使用。</p>
             <button class="submit-button" type="submit">
-              <span>送出預約申請</span>
+              <span>送出諮詢及現勘安排申請</span>
               <span aria-hidden="true">↗</span>
             </button>
           </div>
@@ -210,12 +211,12 @@
       <section class="review-dialog" role="dialog" aria-modal="true" aria-labelledby="review-title">
         <button id="close-dialog" class="dialog-close" type="button" aria-label="關閉確認視窗">×</button>
         <p id="dialog-kicker" class="section-index">FINAL CHECK</p>
-        <h2 id="review-title">確認預約資料</h2>
-        <p id="dialog-intro" class="dialog-intro">請確認以下資訊。點選送出後，預約資料將直接送達本所信箱。</p>
+        <h2 id="review-title">確認諮詢與現勘安排資料</h2>
+        <p id="dialog-intro" class="dialog-intro">請確認以下資訊。點選送出後，申請資料將直接送達本所信箱。</p>
         <dl id="booking-summary" class="booking-summary"></dl>
         <div id="success-panel" class="success-panel" hidden>
           <span class="success-mark" aria-hidden="true">✓</span>
-          <p>本所將透過 LINE 或電話與您確認日期與時段。</p>
+          <p>本所將先與您進行諮詢，再透過 LINE 或電話確認現勘日期與時段。</p>
         </div>
         <div id="dialog-actions" class="dialog-actions">
           <button id="send-booking" class="submit-button" type="button">
